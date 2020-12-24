@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+
+    <form action="http://localhost:3000/process_create" method="post"> 
+         <!--메소드 호스트를 하면 유알엘에 쿼리스트링이 등장하지 않음.  -->
+        <!-- 입력값을 저 주소로 보내고싶다 라는 뜻 -->
+        <input name="title" type="text" placeholder="입력해라" style="display: block;">
+        <textarea name="description" id="" cols="30" rows="10"></textarea>
+        <input type="submit" value="submit">
+    </form>
+    <!-- http://localhost:3000/process_create?title=asfasdfasfa&description=fasdf -->
+    <!-- enter누르니까 액션이 가르키는 장소로 폼의 정보를 쿼리스트링의 형태로  전송함. -->
+<!-- get할때는 쿼리스트링을 쓰는건 괜찮은데 설정할땐 눈에 보이게 쿼리스트링으로 보내면 너무 위험함. 안보이게 보내야햄 -->
+
+</body>
+</html> 
