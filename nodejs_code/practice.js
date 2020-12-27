@@ -2,55 +2,8 @@ const http = require("http");
 const fs = require("fs");
 const url = require("url");
 var qs = require("querystring");
-
-function template(title, content, list) {
-  return `<!doctype html>
-    <html>
-    <head>
-      <title>WEB1 - ${title}</title>
-      <meta charset="utf-8">
-    </head>
-    <body>
-      <h1><a href="/">WEB</a></h1>
-      ${list}
-      <h3><a href="/create">create</a></h3>
-      <h2>${title}</h2>
-
-      <p>
-      ${content}  
-      </p>
-    </body>
-    </html>
-    `;
-}
-
-function template_File(title, content, list) {
-  return `<!doctype html>
-    <html>
-    <head>
-      <title>WEB1 - ${title}</title>
-      <meta charset="utf-8">
-    </head>
-    <body>
-      <h1><a href="/">WEB</a></h1>
-      ${list}
-      <h3><a href="/create">create</a></h3>
-      <a href="/update/?id=${title}">update</a>
-
-      <form action="delete_process" method="post">
-         <input name="title"value="${title}" type="hidden">
-   <input type="submit" value="delete">
-  </form>
-
-      <h2>${title}</h2>
-
-      <p>
-      ${content}  
-      </p>
-    </body>
-    </html>
-    `;
-}
+const template = require("./lib/template");
+// 얘네 각각이 모듈임. 우리가 모듈 사용할 때, 맨 마지막에 module.export = ~ ;로 할 수 있음.
 
 //이 서버에 오는 http요청마다 이 함수가 호출됨.
 const app = http.createServer((request, response) => {
@@ -75,17 +28,17 @@ const app = http.createServer((request, response) => {
   if (request.url == "/") {
     response.writeHead(200);
     // 정상적인 파일 전송
-    response.end(template("Web", "welcome node js", list));
+    response.end(template.HTML("Web", "welcome node js", list));
   } else if (title != undefined) {
     fs.readFile(`./data/${title}`, "utf8", (err, data) => {
       response.writeHead(200);
-      response.end(template_File(title, data, list));
+      response.end(template.File(title, data, list));
     });
     // 화면 출력
   } else if (_url === "/create") {
     response.writeHead(200);
     response.end(
-      template(
+      template.HTML(
         "Create",
         `    <form action="http://localhost:1500/process_create" method="post"> 
    <input name="title" type="text" placeholder="파일명을 입력해주세요" style="display: block;">
@@ -114,7 +67,7 @@ const app = http.createServer((request, response) => {
     fs.readFile(`./data/${urlInfo.query.id}`, "utf8", (err, data) => {
       response.writeHead(200);
       response.end(
-        template_File(
+        template.File(
           `Update - ${urlInfo.query.id}`,
           `    <form action="http://localhost:1500/update_create" method="post">
          <input name="title"value="${urlInfo.query.id}" type="hidden">
@@ -159,11 +112,3 @@ const app = http.createServer((request, response) => {
   // 현재 폴더위지
 });
 app.listen(1500);
-
-/*
-ver1.00 201226 : 단순 화면 띄우기
-ver1.01 201226 : html을 바꾸는 것이 아닌. 화면 단은 냅두고, 아래 컨텐츠 부문만 txt로 불러와서 바꾸기.
-
--크리에이트 기능 구현해야함
-
-*/
