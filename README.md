@@ -9,3 +9,5 @@
 
 - create 기능 구현
 - form을 통해서 데이터 전달, response.on으로 데이터받고, qs.parse로 데이터 변환하고 fileWrite로 생성, 마지막으로 wireHead로 위치 재설정까지
+- update 기능 구현
+- 인풋 히든으로 폼에서 타이틀 값 가져오고 create와 동일한 방법으로 파일 생성.but 파일 이름이 같기에 업데이트가 됐다.

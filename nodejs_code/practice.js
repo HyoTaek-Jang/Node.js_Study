@@ -24,11 +24,36 @@ function template(title, content, list) {
     `;
 }
 
+function template_File(title, content, list) {
+  return `<!doctype html>
+    <html>
+    <head>
+      <title>WEB1 - ${title}</title>
+      <meta charset="utf-8">
+    </head>
+    <body>
+      <h1><a href="/">WEB</a></h1>
+      ${list}
+      <h3><a href="/create">create</a></h3>
+      <h3><a href="/update/?id=${title}">update</a></h3>
+
+      <h2>${title}</h2>
+
+      <p>
+      ${content}  
+      </p>
+    </body>
+    </html>
+    `;
+}
+
 //이 서버에 오는 http요청마다 이 함수가 호출됨.
 const app = http.createServer((request, response) => {
   let _url = request.url;
   //title 제작
   let title = url.parse(_url, true).query.title;
+  let urlInfo = url.parse(_url, true);
+
   //title 제작끝
   console.log(title);
   console.log(_url);
@@ -49,7 +74,7 @@ const app = http.createServer((request, response) => {
   } else if (title != undefined) {
     fs.readFile(`./data/${title}`, "utf8", (err, data) => {
       response.writeHead(200);
-      response.end(template(title, data, list));
+      response.end(template_File(title, data, list));
     });
     // 화면 출력
   } else if (_url === "/create") {
@@ -78,6 +103,36 @@ const app = http.createServer((request, response) => {
       fs.writeFile(`./data/${title}`, description, "utf8", (err) => {
         response.writeHead(302, { Location: `/?title=${title}` });
         response.end("complete create");
+      });
+    });
+  } else if (urlInfo.pathname === "/update/") {
+    fs.readFile(`./data/${urlInfo.query.id}`, "utf8", (err, data) => {
+      response.writeHead(200);
+      response.end(
+        template_File(
+          `Update - ${urlInfo.query.id}`,
+          `    <form action="http://localhost:1500/update_create" method="post">
+         <input name="title"value="${urlInfo.query.id}" type="hidden">
+   <textarea name="description" id="" cols="30" rows="10" >${data}</textarea>
+   <input type="submit" value="submit">
+  </form>`,
+          list
+        )
+      );
+    });
+  } else if (_url === `/update_create`) {
+    let body = ``;
+    request.on("data", (data) => {
+      body += data;
+    });
+    request.on("end", () => {
+      const post = qs.parse(body);
+      const title = post.title;
+      const description = post.description;
+
+      fs.writeFile(`./data/${title}`, description, "utf8", (err) => {
+        response.writeHead(302, { Location: `/?title=${title}` });
+        response.end("complete update");
       });
     });
   } else {
