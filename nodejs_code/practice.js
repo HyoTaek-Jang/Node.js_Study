@@ -35,7 +35,12 @@ function template_File(title, content, list) {
       <h1><a href="/">WEB</a></h1>
       ${list}
       <h3><a href="/create">create</a></h3>
-      <h3><a href="/update/?id=${title}">update</a></h3>
+      <a href="/update/?id=${title}">update</a>
+
+      <form action="delete_process" method="post">
+         <input name="title"value="${title}" type="hidden">
+   <input type="submit" value="delete">
+  </form>
 
       <h2>${title}</h2>
 
@@ -133,6 +138,17 @@ const app = http.createServer((request, response) => {
       fs.writeFile(`./data/${title}`, description, "utf8", (err) => {
         response.writeHead(302, { Location: `/?title=${title}` });
         response.end("complete update");
+      });
+    });
+  } else if (_url === `/delete_process`) {
+    request.on("data", (data) => {
+      request.on("end", (err) => {
+        const title = qs.parse(`${data}`).title;
+        console.log(title);
+        fs.unlink(`./data/${title}`, (err) => {
+          response.writeHead(302, { Location: `/` });
+          response.end("complete update");
+        });
       });
     });
   } else {
