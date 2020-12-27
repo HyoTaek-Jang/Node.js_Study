@@ -111,6 +111,7 @@ var app = http.createServer(function (request, response) {
     });
     request.on("end", function () {
       let post = qs.parse(body); //정보를 객체로 받음.
+      console.log(post);
       let title = post.title;
       let description = post.description;
       fs.writeFile(
